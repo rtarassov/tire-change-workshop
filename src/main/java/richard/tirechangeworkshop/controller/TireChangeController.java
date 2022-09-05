@@ -17,12 +17,18 @@ import java.util.*;
 public class TireChangeController {
 
     @GetMapping("/available")
-    public List<Answer> findAvailableTimes(@RequestParam("from") String from,
-                                           @RequestParam("until") String until){
+    public ResponseEntity<List<Answer>> findAvailableTimes(@RequestParam("from") String from,
+                                     @RequestParam("until") String until){
         RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("from", from);
+        headers.set("until", until);
         String url = "http://localhost:9003/api/v1/tire-change-times/available?from=" + from + "&until=" + until;
-        Answer[] times = restTemplate.getForObject(url, Answer[].class);
-        return Arrays.asList(times);
+
+        HttpEntity<Void> requestEntity = new HttpEntity<>(headers);
+        ResponseEntity<List<Answer>> response = restTemplate.exchange(
+                url, HttpMethod.GET, requestEntity, ResponseEntity<List<Answer>>.class, from, until);
+        return ResponseEntity.ok(response.getBody());
     }
 
 
