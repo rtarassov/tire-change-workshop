@@ -30,7 +30,6 @@ public class TireChangeService {
 
 
     public List<AvailableTime> findAvailableTimes(LocalDate from, LocalDate until) {
-        // System.out.println(suva);
         if (from == null || until == null || until.isBefore(from)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Please select both dates");
         }
