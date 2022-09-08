@@ -1,35 +1,26 @@
 package richard.tirechangeworkshop.controller;
 
-import org.springframework.context.annotation.Bean;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.*;
-import org.springframework.http.converter.HttpMessageConverter;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
-import richard.tirechangeworkshop.model.Answer;
-import richard.tirechangeworkshop.model.TireChangeTime;
+import richard.tirechangeworkshop.model.AvailableTime;
+import richard.tirechangeworkshop.service.TireChangeService;
 
-import java.sql.Timestamp;
-import java.util.*;
+import java.time.LocalDate;
+import java.util.List;
 
 @RestController
 @RequestMapping("/tire-change-times")
+@CrossOrigin(origins = "http://localhost:4200/")
 public class TireChangeController {
 
+
+
+    private final TireChangeService tireChangeService = new TireChangeService();
     @GetMapping("/available")
-    public ResponseEntity<List<Answer>> findAvailableTimes(@RequestParam("from") String from,
-                                     @RequestParam("until") String until){
-        RestTemplate restTemplate = new RestTemplate();
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("from", from);
-        headers.set("until", until);
-        String url = "http://localhost:9003/api/v1/tire-change-times/available?from=" + from + "&until=" + until;
-
-        HttpEntity<Void> requestEntity = new HttpEntity<>(headers);
-        ResponseEntity<List<Answer>> response = restTemplate.exchange(
-                url, HttpMethod.GET, requestEntity, ResponseEntity<List<Answer>>.class, from, until);
-        return ResponseEntity.ok(response.getBody());
+    public ResponseEntity<List<AvailableTime>> findAvailableTimes(
+            @RequestParam("from") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate from,
+            @RequestParam("until") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate until){
+            return ResponseEntity.ok(tireChangeService.findAvailableTimes(from, until));
     }
-
-
 }
